@@ -1,10 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedbackComponent, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage  from  '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
 import {Feather} from '@expo/vector-icons';
 import ListItem from './ListItem';
+import Modal from "react-native-modal";
+import { TextInput,Headline,Button } from 'react-native-paper';
 
 const STORAGE_KEY = '@save_details';
 
@@ -33,9 +35,17 @@ export default function App() {
 
     const [userArray,setUserArray] = useState([])
     const [loading,setLoading] = useState(false)
+    const [modalVisible, setModalVisible] = useState(false);
+    const [name, setName] = useState('');
+    const [phnNumber, setPhnNumber] = useState('');
   useEffect(()=>{
-    saveData()
+    //saveData()
+    //AsyncStorage.clear();
     initiateArray()
+  },[])
+
+  useEffect(()=>{
+    getData()
   },[])
 
   const saveData = async () => {
@@ -52,6 +62,7 @@ export default function App() {
       const myArray = await AsyncStorage.getItem(STORAGE_KEY);
   if (myArray !== null) {
     // We have data!!
+    setDetailArray(JSON.parse(myArray))
     console.log('message',JSON.parse(myArray));
     
   }
@@ -71,8 +82,6 @@ export default function App() {
     if(userArray.length< detailArray.length)
     {
       const items = detailArray.slice(userArray.length,userArray.length+5)
-      console.log(items)
-      console.log(userArray)
       setUserArray(userArray.concat(items))
       setLoading(false)
     }
@@ -81,6 +90,27 @@ export default function App() {
     }
     
   }
+
+  const addItemToArray = () =>{
+    let userObj = {}
+    userObj.name = name;
+    userObj.phn = phnNumber
+    console.log(userObj)
+    if(detailArray.some(item=>item.name==name || item.phn == phnNumber)){
+      toggleModal()
+      alert('User already exists!')
+    }
+    else{
+      detailArray.push(userObj)
+      saveData()
+      initiateArray()
+      toggleModal()
+    }
+  }
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
 
   const footer = () =>{
     return loading ? <View><Text>Loading...</Text></View> : null
@@ -114,13 +144,54 @@ export default function App() {
       />
       </View>
       <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
-          <Pressable onPress={()=>{alert('pressed')}} style={{height:30,width:150,backgroundColor:'#9c3353',justifyContent:'center',alignItems:'center',borderRadius:15}}>
+          <Pressable onPress={()=>{setModalVisible(true)}} style={{height:30,width:150,backgroundColor:'#9c3353',justifyContent:'center',alignItems:'center',borderRadius:15}}>
             <Text style={{color:'#fff'}}>
               {'Add members'}
             </Text>
           </Pressable>
       </View>
-     
+      <Modal isVisible={modalVisible} 
+      style={{backgroundColor:'#fff',margin: 0,justifyContent:'flex-start'}} 
+      coverScreen={true} 
+      onBackButtonPress={toggleModal} 
+      animationIn={'slideInUp'}
+      useNativeDriver={true}
+      >
+        <View style={{ padding:10}}>
+        <Pressable onPress={()=>{setModalVisible(false)}}>
+        <Text style={{color:'#000'}}>
+              {'Back'}
+            </Text>
+        </Pressable>
+        <Headline>
+          {'Add user'}
+        </Headline>
+        <TextInput
+          mode={'outlined'}
+          label="Name"
+          value={name}
+          onChangeText={text => setName(text)}
+          //outlineColor={'#9c3353'}
+          activeOutlineColor={'#9c3353'}
+          style={{backgroundColor:'#fff',color:'#9c3353',height:50}}
+        />
+        <TextInput
+          mode={'outlined'}
+          keyboardType='numeric'
+          label="Phone number"
+          value={phnNumber}
+          maxLength={10}
+          onChangeText={text => setPhnNumber(text)}
+          activeOutlineColor={'#9c3353'}
+          //outlineColor={'#9c3353'}
+          style={{backgroundColor:'#fff',color:'#9c3353',height:50}}
+        />
+
+        <Button mode="contained" onPress={() => addItemToArray()} style={{backgroundColor:'#9c3353',marginTop:20}}>
+            Add
+          </Button>
+        </View>
+      </Modal>
     </View>
   );
  }
@@ -141,5 +212,6 @@ const styles = StyleSheet.create({
   },
   childContainer: {
     flex:6.5
-  }
+  },
+  
 });

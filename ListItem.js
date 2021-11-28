@@ -34,7 +34,7 @@ const ListItem =({item,...props}) => {
                 </View>
                </View>
                <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                <MaterialIcons name="delete-outline" size={24} color="#9c3353"/>
+                <MaterialIcons name="delete-outline" size={24} color="#9c3353" />
                </View>
 
             </View>
