@@ -1,96 +1,126 @@
-import { StatusBar } from 'expo-status-bar';
+
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
-//https://sof.abpweddings.com/mats/activity/read/2180746/2021/10/0.json
+import { FlatList, Pressable, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedbackComponent, View } from 'react-native';
+import AsyncStorage  from  '@react-native-async-storage/async-storage';
+import { AntDesign } from '@expo/vector-icons';
+import {Feather} from '@expo/vector-icons';
+import ListItem from './ListItem';
+
+const STORAGE_KEY = '@save_details';
+
 export default function App() {
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [defYear, setDefYear] = useState('2021');
-  const [years, setYears] = useState([
-    {label: '2019', value: '2019'},
-    {label: '2020', value: '2020'},
-    {label: '2021', value: '2021'}
-  ]);
-  const [openMonth, setOpenMonth] = useState(false);
-  const [defMonth, setDefMonth] = useState('October');
-  const [months, setMonths] = useState([
-    {label: 'January', value: 'January'},
-    {label: 'February', value: 'February'},
-    {label: 'March', value: 'March'},
-    {label: 'April', value: 'April'},
-    {label: 'May', value: 'May'},
-    {label: 'June', value: 'June'},
-    {label: 'July', value: 'July'},
-    {label: 'August', value: 'August'},
-    {label: 'September', value: 'September'},
-    {label: 'October', value: 'October'},
-    {label: 'November', value: 'November'},
-    {label: 'December', value: 'December'}
+  const [detailArray,setDetailArray] = useState([
+    {name:'Test1',phn:'9999999999'},
+    {name:'Test2',phn:'9999999998'},
+    {name:'ATest3',phn:'9999999997'},
+    {name:'BTest4',phn:'9999999996'},
+    {name:'CTest5',phn:'9999999995'},
+    {name:'DTest6',phn:'9999999994'},
+    {name:'ETest7',phn:'9999999993'},
+    {name:'FTest8',phn:'9999999992'},
+    {name:'GTest9',phn:'9999999991'},
+    {name:'HTest10',phn:'9999999981'},
+    {name:'ITest11',phn:'9999999982'},
+    {name:'JTest12',phn:'9999999983'},
+    {name:'KTest13',phn:'9999999984'},
+    {name:'LTest14',phn:'9999999985'},
+    {name:'MTest15',phn:'9999999986'},
+    {name:'NTest16',phn:'9999999987'},
+    {name:'OTest17',phn:'9999999988'},
+    {name:'PTest18',phn:'9999999989'},
+    {name:'QTest19',phn:'9999999970'},
+    {name:'RTest20',phn:'9999999990'}])
+
+    const [userArray,setUserArray] = useState([])
+    const [loading,setLoading] = useState(false)
+  useEffect(()=>{
+    saveData()
+    initiateArray()
+  },[])
+
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(detailArray))
+      //alert('Data successfully saved')
+    } catch (e) {
+      alert(e)
+    }
+  }
+
+  const getData = async () =>{
+    try {
+      const myArray = await AsyncStorage.getItem(STORAGE_KEY);
+  if (myArray !== null) {
+    // We have data!!
+    console.log('message',JSON.parse(myArray));
     
-  ]);
+  }
+    } catch (e) {
+      alert(e)
+    }
+  }
 
-  const getData = (year=2021,month=10) => {
-    return fetch('https://sof.abpweddings.com/mats/activity/read/2180746/'+year+'/'+ month +'/0.json')
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json.activityDocuments)
-        setLoading(false)
-        setData(json.activityDocuments);
-        //return json.activityDocuments;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  const initiateArray = () =>{
+    const items = detailArray.slice(0,5)
+    setUserArray(items)
+  }
 
-  useEffect(() => {
-    getData();
-  }, [defYear,defMonth]);
+  const addInfiniteItem = () =>{
+    //alert('came here')
+    setLoading(true)
+    if(userArray.length< detailArray.length)
+    {
+      const items = detailArray.slice(userArray.length,userArray.length+5)
+      console.log(items)
+      console.log(userArray)
+      setUserArray(userArray.concat(items))
+      setLoading(false)
+    }
+    else{
+      setLoading(false)
+    }
+    
+  }
 
- if(isLoading){
-   return (
-    <View style={styles.container}>
-      <ActivityIndicator/>
-    </View>
-   )
- } 
+  const footer = () =>{
+    return loading ? <View><Text>Loading...</Text></View> : null
+  }
 
   return (
     <View style={styles.container}>
-      
-      <View style={{flexDirection:'row'}}>
-        <Text style={{marginRight:3}}>
-          {'Year'}
+      <View style={styles.parentContainer}>
+        <Feather name="users" size={15} color="#A9A9A9" style={{flex:.5,marginTop:3}}/>
+        <Text style={{flex:8.8,fontSize:16,fontWeight:'bold',color:'#696969'}}>
+        Team members
         </Text>
-        <DropDownPicker
-            open={open}
-            value={defYear}
-            items={years}
-            setOpen={setOpen}
-            setValue={setDefYear}
-            setItems={setYears}
-            onChangeValue={(value)=>{getData(value,defMonth)}}
-          />
+        <AntDesign name="infocirlce" size={22} color="#3CB371" style={{flex:.7,marginTop:3}} />
       </View>
-      <View style={{flexDirection:'row',marginLeft:5}}>
-        <Text style={{marginRight:3}}>
-          {'Month '}
-        </Text>
-        <DropDownPicker
-            open={openMonth}
-            value={defMonth}
-            items={months}
-            setOpen={setOpenMonth}
-            setValue={setDefMonth}
-            setItems={setMonths}
-            onChangeValue={(value)=>{getData(defYear,value)}}
-          />
+      <View style={styles.childContainer}>
+      <FlatList
+        data={userArray}
+        keyExtractor={(item) => item.name.toString()}
+        renderItem={({ item }) => (
+              <ListItem
+                  item={item}
+              />
+  
+      )}
+        ListFooterComponent={footer}
+        onEndReachedThreshold={0.1}
+        onEndReached={()=>{addInfiniteItem()}}
+        style={{height:300,flexGrow:0,padding:5}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{paddingBottom:20}}
+      />
       </View>
-      
-      
-      
+      <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
+          <Pressable onPress={()=>{alert('pressed')}} style={{height:30,width:150,backgroundColor:'#9c3353',justifyContent:'center',alignItems:'center',borderRadius:15}}>
+            <Text style={{color:'#fff'}}>
+              {'Add members'}
+            </Text>
+          </Pressable>
+      </View>
+     
     </View>
   );
  }
@@ -100,9 +130,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    
-    
+    padding:10
   },
+  parentContainer: {
+    flex:.5,
+    flexDirection:'row',
+    justifyContent:'center',
+    paddingHorizontal:5
+
+  },
+  childContainer: {
+    flex:6.5
+  }
 });
