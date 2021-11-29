@@ -1,8 +1,15 @@
+/**
+ * Created  by Sayar Samanta on 28th Nov
+ */
 import React from 'react';
 import { Text, View ,StyleSheet} from "react-native";
 import {Feather} from '@expo/vector-icons';
 import {MaterialIcons} from '@expo/vector-icons';
-
+/**
+ * 
+ * @param {function for getting tne initials} fullName 
+ * @returns 
+ */
 function nameToInitials(fullName) {
     const namesArray = fullName.trim().split(' ');
     if (namesArray.length === 1) return `${namesArray[0].charAt(0)}`;
@@ -34,7 +41,7 @@ const ListItem =({item,...props}) => {
                 </View>
                </View>
                <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                <MaterialIcons name="delete-outline" size={24} color="#9c3353" />
+                <MaterialIcons name="delete-outline" size={24} color="#9c3353"/>
                </View>
 
             </View>

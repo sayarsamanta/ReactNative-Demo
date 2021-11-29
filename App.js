@@ -1,16 +1,22 @@
 
+/**
+ * Created by Sayar Samanta on 27th Nov
+ */
 import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage  from  '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
 import {Feather} from '@expo/vector-icons';
 import ListItem from './ListItem';
-import Modal from "react-native-modal";
 import { TextInput,Headline,Button } from 'react-native-paper';
+import Modal from "react-native-modal";
 
 const STORAGE_KEY = '@save_details';
 
 export default function App() {
+  /**
+   * Array declaration
+   */
   const [detailArray,setDetailArray] = useState([
     {name:'Test1',phn:'9999999999'},
     {name:'Test2',phn:'9999999998'},
@@ -38,9 +44,9 @@ export default function App() {
     const [modalVisible, setModalVisible] = useState(false);
     const [name, setName] = useState('');
     const [phnNumber, setPhnNumber] = useState('');
+
   useEffect(()=>{
     //saveData()
-    //AsyncStorage.clear();
     initiateArray()
   },[])
 
@@ -48,6 +54,9 @@ export default function App() {
     getData()
   },[])
 
+  /**
+   * saving the array in local storage
+   */
   const saveData = async () => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(detailArray))
@@ -56,32 +65,40 @@ export default function App() {
       alert(e)
     }
   }
-
+  /**
+   * getting the array from local storage
+   */
   const getData = async () =>{
     try {
       const myArray = await AsyncStorage.getItem(STORAGE_KEY);
   if (myArray !== null) {
     // We have data!!
-    setDetailArray(JSON.parse(myArray))
     console.log('message',JSON.parse(myArray));
+    setDetailArray(JSON.parse(myArray))
     
   }
     } catch (e) {
       alert(e)
     }
   }
-
+  /**
+   * initiating the array with first 5 items
+   */
   const initiateArray = () =>{
     const items = detailArray.slice(0,5)
     setUserArray(items)
   }
-
+  /**
+   * adding infinite scrolling
+   */
   const addInfiniteItem = () =>{
     //alert('came here')
     setLoading(true)
     if(userArray.length< detailArray.length)
     {
       const items = detailArray.slice(userArray.length,userArray.length+5)
+      console.log(items)
+      console.log(userArray)
       setUserArray(userArray.concat(items))
       setLoading(false)
     }
@@ -90,28 +107,38 @@ export default function App() {
     }
     
   }
-
+  /**
+   * adding new user to list
+   */
   const addItemToArray = () =>{
     let userObj = {}
     userObj.name = name;
     userObj.phn = phnNumber
     console.log(userObj)
-    if(detailArray.some(item=>item.name==name || item.phn == phnNumber)){
-      toggleModal()
-      alert('User already exists!')
+    if(name =='' || phnNumber==''){
+      alert('Please fill all the required fields!')
     }
     else{
-      detailArray.push(userObj)
-      saveData()
-      initiateArray()
-      toggleModal()
+      if(detailArray.some(item=>item.name==name || item.phn == phnNumber)){
+        alert('User already exists!')
+      }
+      else{
+        detailArray.push(userObj)
+        saveData()
+        initiateArray()
+        toggleModal()
+      }
     }
+    
   }
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
-
+  /**
+   * 
+   * @returns footer component of flatlist
+   */
   const footer = () =>{
     return loading ? <View><Text>Loading...</Text></View> : null
   }
@@ -144,7 +171,7 @@ export default function App() {
       />
       </View>
       <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
-          <Pressable onPress={()=>{setModalVisible(true)}} style={{height:30,width:150,backgroundColor:'#9c3353',justifyContent:'center',alignItems:'center',borderRadius:15}}>
+          <Pressable onPress={()=>{toggleModal()}} style={{height:30,width:150,backgroundColor:'#9c3353',justifyContent:'center',alignItems:'center',borderRadius:15}}>
             <Text style={{color:'#fff'}}>
               {'Add members'}
             </Text>
@@ -168,7 +195,7 @@ export default function App() {
         </Headline>
         <TextInput
           mode={'outlined'}
-          label="Name"
+          label="*Name"
           value={name}
           onChangeText={text => setName(text)}
           //outlineColor={'#9c3353'}
@@ -178,7 +205,7 @@ export default function App() {
         <TextInput
           mode={'outlined'}
           keyboardType='numeric'
-          label="Phone number"
+          label="*Phone number"
           value={phnNumber}
           maxLength={10}
           onChangeText={text => setPhnNumber(text)}
@@ -192,6 +219,7 @@ export default function App() {
           </Button>
         </View>
       </Modal>
+     
     </View>
   );
  }
@@ -212,6 +240,5 @@ const styles = StyleSheet.create({
   },
   childContainer: {
     flex:6.5
-  },
-  
+  }
 });
