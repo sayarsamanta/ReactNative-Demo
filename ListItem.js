@@ -5,6 +5,7 @@ import React from 'react';
 import { Text, View ,StyleSheet} from "react-native";
 import {Feather} from '@expo/vector-icons';
 import {MaterialIcons} from '@expo/vector-icons';
+import { moderateScale, scale } from 'react-native-size-matters';
 /**
  * 
  * @param {function for getting tne initials} fullName 
@@ -21,27 +22,27 @@ const ListItem =({item,...props}) => {
         return(
             <View style={styles.container}>
                <View style={{flex:1.5,justifyContent:'center'}}>
-                <View style={{height:44,width:44,borderRadius:22,backgroundColor:'#e4c5ce',justifyContent:'center',alignItems:'center',opacity:.7}}  >
-                    <Text style={{fontSize:17}}>
+                <View style={styles.nameInitial}  >
+                    <Text style={{fontSize:moderateScale(17)}}>
                         {nameToInitials(item.name)}
                     </Text>
                 </View>
                </View> 
                <View style={{flex:7.8,flexDirection:'column'}}>
                 <View style={{flex:1,alignItems:'flex-start'}}>
-                    <Text style={{fontSize:15,color:'#6e6e6e',fontWeight:'bold'}}>
+                    <Text style={styles.nameText}>
                         {item.name}
                     </Text>
                 </View>
-                <View style={{flex:1,flexDirection:'row',alignItems:'flex-end',bottom:2}}>
-                <Feather name="phone-call" size={13} color="#9c3353" />
-                <Text style={{fontSize:13,color:'#8b8b8b',fontWeight:'bold'}}>
+                <View style={styles.numberParentView}>
+                <Feather name="phone-call" size={scale(10)} color="#9c3353" />
+                <Text style={styles.numberText}>
                     {' '}{' +91 - '}{item.phn}
                 </Text>
                 </View>
                </View>
-               <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                <MaterialIcons name="delete-outline" size={24} color="#9c3353"/>
+               <View style={styles.deleteView}>
+                <MaterialIcons name="delete-outline" size={scale(23)} color="#9c3353"/>
                </View>
 
             </View>
@@ -51,16 +52,46 @@ const ListItem =({item,...props}) => {
 
 const styles = StyleSheet.create({
     container: {
-      height:65,
-      padding:10,
+      height:scale(60),
+      padding:moderateScale(11),
       flexDirection:'row',
-      borderRadius:7,
-      borderWidth:.7,
+      borderRadius:moderateScale(7),
+      borderWidth:scale(.7),
       borderColor:'#fcf7f8',
-      marginVertical:4,
+      marginVertical:moderateScale(3),
       elevation:1,
       
     },
+    deleteView:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    numberText:{
+        fontSize:scale(11),
+        color:'#8b8b8b',
+        fontWeight:'bold'
+    },
+    numberParentView:{
+        flex:1,
+        flexDirection:'row',
+        alignItems:'flex-end',
+        bottom:moderateScale(2)
+    },
+    nameText:{
+        fontSize:scale(13),
+        color:'#6e6e6e',
+        fontWeight:'bold'
+    },
+    nameInitial:{
+        height:scale(38),
+        width:scale(38),
+        borderRadius:scale(19),
+        backgroundColor:'#e4c5ce',
+        justifyContent:'center',
+        alignItems:'center',
+        opacity:.7
+    }
   });
 
 export default (ListItem);

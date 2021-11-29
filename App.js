@@ -10,6 +10,7 @@ import {Feather} from '@expo/vector-icons';
 import ListItem from './ListItem';
 import { TextInput,Headline,Button } from 'react-native-paper';
 import Modal from "react-native-modal";
+import { moderateScale, scale } from 'react-native-size-matters';
 
 const STORAGE_KEY = '@save_details';
 
@@ -146,11 +147,11 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.parentContainer}>
-        <Feather name="users" size={15} color="#A9A9A9" style={{flex:.5,marginTop:3}}/>
-        <Text style={{flex:8.8,fontSize:16,fontWeight:'bold',color:'#696969'}}>
+        <Feather name="users" size={scale(15)} color="#A9A9A9" style={{flex:.5,marginTop:3}}/>
+        <Text style={{flex:8.8,fontSize:scale(13.5),fontWeight:'bold',color:'#696969'}}>
         Team members
         </Text>
-        <AntDesign name="infocirlce" size={22} color="#3CB371" style={{flex:.7,marginTop:3}} />
+        <AntDesign name="infocirlce" size={scale(20)} color="#3CB371" style={{flex:.7,marginTop:3}} />
       </View>
       <View style={styles.childContainer}>
       <FlatList
@@ -165,26 +166,26 @@ export default function App() {
         ListFooterComponent={footer}
         onEndReachedThreshold={0.1}
         onEndReached={()=>{addInfiniteItem()}}
-        style={{height:300,flexGrow:0,padding:5}}
+        style={styles.flatlist}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom:20}}
+        contentContainerStyle={{paddingBottom:moderateScale(20)}}
       />
       </View>
-      <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
-          <Pressable onPress={()=>{toggleModal()}} style={{height:30,width:150,backgroundColor:'#9c3353',justifyContent:'center',alignItems:'center',borderRadius:15}}>
+      <View style={styles.addButtonView}>
+          <Pressable onPress={()=>{toggleModal()}} style={styles.buttonStyle}>
             <Text style={{color:'#fff'}}>
               {'Add members'}
             </Text>
           </Pressable>
       </View>
       <Modal isVisible={modalVisible} 
-      style={{backgroundColor:'#fff',margin: 0,justifyContent:'flex-start'}} 
+      style={styles.modalStyle} 
       coverScreen={true} 
       onBackButtonPress={toggleModal} 
       animationIn={'slideInUp'}
       useNativeDriver={true}
       >
-        <View style={{ padding:10}}>
+        <View style={{ padding:moderateScale(10)}}>
         <Pressable onPress={()=>{setModalVisible(false)}}>
         <Text style={{color:'#000'}}>
               {'Back'}
@@ -200,7 +201,7 @@ export default function App() {
           onChangeText={text => setName(text)}
           //outlineColor={'#9c3353'}
           activeOutlineColor={'#9c3353'}
-          style={{backgroundColor:'#fff',color:'#9c3353',height:50}}
+          style={styles.textInput}
         />
         <TextInput
           mode={'outlined'}
@@ -211,10 +212,10 @@ export default function App() {
           onChangeText={text => setPhnNumber(text)}
           activeOutlineColor={'#9c3353'}
           //outlineColor={'#9c3353'}
-          style={{backgroundColor:'#fff',color:'#9c3353',height:50}}
+          style={styles.textInput}
         />
 
-        <Button mode="contained" onPress={() => addItemToArray()} style={{backgroundColor:'#9c3353',marginTop:20}}>
+        <Button mode="contained" onPress={() => addItemToArray()} style={styles.addButton}>
             Add
           </Button>
         </View>
@@ -229,16 +230,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding:10
+    padding:moderateScale(10)
   },
   parentContainer: {
     flex:.5,
     flexDirection:'row',
     justifyContent:'center',
-    paddingHorizontal:5
+    paddingHorizontal:moderateScale(5)
 
   },
   childContainer: {
     flex:6.5
+  },
+  textInput:{
+    backgroundColor:'#fff',
+    color:'#9c3353',
+    height:scale(50)
+  },
+  addButton:{
+    backgroundColor:'#9c3353',
+    marginTop:moderateScale(20)
+  },
+  modalStyle:{
+    backgroundColor:'#fff',
+    margin: 0,
+    justifyContent:'flex-start'
+  },
+  addButtonView:{
+    flex:3,
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  buttonStyle:{
+    height:scale(30),
+    width:scale(130),
+    backgroundColor:'#9c3353',
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:15
+  },
+  flatlist:{
+    height:scale(270),flexGrow:0,padding:moderateScale(5)
   }
 });
